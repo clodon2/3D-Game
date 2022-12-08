@@ -6,10 +6,6 @@ from ursina.shaders import basic_lighting_shader
 
 app = Ursina()
 
-FOG_START = 10
-FOG_OPAQUE = 70
-
-
 random.seed(0)
 
 ground = Entity(model='cube', collider='box', scale=(64, 1, 64), texture='Textures/floor1.png', texture_scale=(4,4))
@@ -28,12 +24,6 @@ def input(key):
         print(scene.fog.get_linear_onset_point())
 
 
-def update():
-    fog_start = (player.x + FOG_START, player.y + FOG_START, player.z + FOG_START)
-    fog_opaque = (player.x + FOG_OPAQUE, player.y + FOG_OPAQUE, player.z + FOG_OPAQUE)
-    player.camera_pivot.setFog(panda3d.core.Fog(1))
-
-
 def pause_input(key):
     if key == "escape":
         quit()
@@ -47,6 +37,10 @@ def pause_input(key):
 
         application.paused = editor_camera.enabled
 
+        
+scene.fog_density = .05
+scene.fog_color = color.blue
+        
 
 pause_handler = Entity(ignore_paused=True, input=pause_input)
 
