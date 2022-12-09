@@ -8,7 +8,6 @@ app = Ursina()
 
 random.seed(0)
 
-ground = Entity(model='cube', collider='box', scale=(64, 1, 64), texture='Textures/floor1.png', texture_scale=(4,4))
 tester = Entity(model='sphere', collider='box', scale=2, texture="grass")
 
 editor_camera = EditorCamera(enabled=False, ignore_paused=True)
@@ -17,6 +16,20 @@ player.collider = BoxCollider(player, Vec3(0,1,0), Vec3(1,2,1))
 
 Sky(color=color.black)
 
+base_floor = Entity(model='none', collider='none')
+
+base_floor_width = 10
+for w in range(10):
+    for l in range(10):
+        new_cube = Entity(model='cube')
+        new_cube.x = w
+        new_cube.z = l
+        new_cube.y = 0
+        new_cube.parent = base_floor
+        
+base_floor.combine()
+base_floor.collider = 'mesh'
+base_floor.texture = "Textures/floor1.png"
 
 def input(key):
     if key == "g":
