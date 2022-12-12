@@ -1,9 +1,4 @@
-from ursina import Entity, color, load_texture, texture
-import panda3d.core
-import ursina
-from ursina import *
-from ursina.prefabs.first_person_controller import FirstPersonController
-from ursina.shaders import basic_lighting_shader
+from ursina import Entity, color, Vec3
 
 # floor characteristics (base for room)
 FLOOR_CHUNKS = 10
@@ -13,7 +8,7 @@ CHUNK_SIZE_X = 10
 FLOOR_Y = 0
 CHUNK_SIZE_Z = 5
 
-FLOOR_POSITION = (-10, FLOOR_Y, -10)
+FLOOR_POSITION = (0, FLOOR_Y, 0)
 
 FLOOR_TEXTURE = "Textures/hardwood.jpg"
 
@@ -79,3 +74,9 @@ base_floor.collider = 'mesh'
 for w in base_walls:
     w.combine()
     w.collider = 'mesh'
+
+# light
+ceiling_light_x = FLOOR_POSITION[0] + (CHUNK_SIZE_X*(FLOOR_WIDTH/2))
+ceiling_light_z = FLOOR_POSITION[2] + (CHUNK_SIZE_Z*(FLOOR_LENGTH/2))
+ceiling_light_y = FLOOR_POSITION[1] + WALL_HEIGHT*CHUNK_SIZE_Z
+ceiling_light_position = Vec3(ceiling_light_x, ceiling_light_y, ceiling_light_z)
