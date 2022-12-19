@@ -1,14 +1,12 @@
 from ursina import Ursina, window, Entity, color, input_handler, EditorCamera, mouse, application, scene, Vec3
-from ursina.shaders import lit_with_shadows_shader
-from ursina.lights import PointLight
 from Player import FirstPersonController
 
 window.vsync = True
 app = Ursina()
 
-Entity.default_shader = lit_with_shadows_shader
+Entity.default_shader = None
 
-from World import base_floor, base_walls, FLOOR_TEXTURE, WALL_TEXTURE, ceiling_light_position
+from World import base_floor, base_walls, FLOOR_TEXTURE, WALL_TEXTURE
 
 base_floor.texture = FLOOR_TEXTURE
 for w in base_walls:
@@ -16,7 +14,9 @@ for w in base_walls:
 
 table = Entity(model='cube', collider='cube', position=Vec3(30, 1, 30), scale=(5, 2, 1), texture='floor1.png')
 
-player = FirstPersonController(y=5, x=5, origin_y=-.5, speed=10)
+mug = Entity(model="3D Models/mug.obj", texture="3d Models/mugtexture.png", position=Vec3(30, 2, 30), scale=4)
+
+player = FirstPersonController(model='cube', y=5, x=5, origin_y=-.5, speed=10)
 
 editor_camera = EditorCamera(enabled=False, ignore_paused=True)
 
@@ -39,8 +39,5 @@ def pause_input(key):
 
 
 pause_handler = Entity(ignore_paused=True, input=pause_input)
-
-light_base = Entity()
-c_light = PointLight(parent=light_base, position=ceiling_light_position, shadows=True, rotation=(90, 0, 90))
 
 app.run()
