@@ -23,8 +23,10 @@ class FirstPersonController(Entity):
         self.air_time = 0
 
         self.dashing = False
-        self.dash_distance = 20
-        self.dash_duration = .8
+        self.x_dash = 0
+        self.dash_distance = 5
+        self.dash_duration = .2
+        self.dash_cooldown = .8
 
         for key, value in kwargs.items():
             setattr(self, key ,value)
@@ -47,8 +49,12 @@ class FirstPersonController(Entity):
             + self.right * (held_keys['d'] - held_keys['a'])
             ).normalized()
 
+        # adds dash velocity
+        self.direction += Vec3(self.forward * self.x_dash)
+
         feet_ray = raycast(self.position+Vec3(0,0.5,0), self.direction, ignore=(self,), distance=.5, debug=False)
         head_ray = raycast(self.position+Vec3(0,self.height-.1,0), self.direction, ignore=(self,), distance=.5, debug=False)
+        print(head_ray.hit, feet_ray.hit)
         if not feet_ray.hit and not head_ray.hit:
             move_amount = self.direction * time.dt * self.speed
 
@@ -61,6 +67,8 @@ class FirstPersonController(Entity):
             if raycast(self.position+Vec3(-.0,1,0), Vec3(0,0,-1), distance=.5, ignore=(self,)).hit:
                 move_amount[2] = max(move_amount[2], 0)
             self.position += move_amount
+        else:
+            self.end_dash()
 
             # self.position += self.direction * self.speed * time.dt
 
@@ -98,14 +106,14 @@ class FirstPersonController(Entity):
 
         self.dashing = True
 
-        x_dash = self.forward[0] * self.dash_distance
-        z_dash = self.forward[2] * self.dash_distance
-        self.animate_x(self.x + x_dash, self.dash_duration, resolution=int(1 // time.dt),
-                       curve=curve.in_out_circ)
-        self.animate_z(self.z + z_dash, self.dash_duration, resolution=int(1 // time.dt),
-                       curve=curve.in_out_circ)
+        self.x_dash = self.dash_distance
 
-        invoke(self.end_dash, delay=2)
+        invoke(self.end_dash_movement, delay=self.dash_duration)
+
+    def end_dash_movement(self):
+        self.x_dash = 0
+
+        invoke(self.end_dash, delay=self.dash_cooldown)
 
     def end_dash(self):
         self.dashing = False
