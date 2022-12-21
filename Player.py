@@ -4,9 +4,11 @@ from ursina import Entity, camera, color,\
 
 # modified first person controller from prefabs
 class FirstPersonController(Entity):
-    def __init__(self, **kwargs):
+    def __init__(self, inventory, **kwargs):
         self.cursor = Entity(parent=camera.ui, model='quad', color=color.pink, scale=.008, rotation_z=45)
         super().__init__()
+        self.inventory = inventory
+
         self.speed = 5
         self.height = 2
         self.camera_pivot = Entity(parent=self, y=self.height)
@@ -42,7 +44,7 @@ class FirstPersonController(Entity):
         self.rotation_y += mouse.velocity[0] * self.mouse_sensitivity[1]
 
         self.camera_pivot.rotation_x -= mouse.velocity[1] * self.mouse_sensitivity[0]
-        self.camera_pivot.rotation_x= clamp(self.camera_pivot.rotation_x, -90, 90)
+        self.camera_pivot.rotation_x = clamp(self.camera_pivot.rotation_x, -90, 90)
 
         self.direction = Vec3(
             self.forward * (held_keys['w'] - held_keys['s'])
@@ -54,7 +56,6 @@ class FirstPersonController(Entity):
 
         feet_ray = raycast(self.position+Vec3(0,0.5,0), self.direction, ignore=(self,), distance=.5, debug=False)
         head_ray = raycast(self.position+Vec3(0,self.height-.1,0), self.direction, ignore=(self,), distance=.5, debug=False)
-        print(head_ray.hit, feet_ray.hit)
         if not feet_ray.hit and not head_ray.hit:
             move_amount = self.direction * time.dt * self.speed
 
@@ -135,3 +136,52 @@ class FirstPersonController(Entity):
     def on_disable(self):
         mouse.locked = False
         self.cursor.enabled = False
+
+
+# inventory (updates what mug is held)
+class Inventory:
+    def __init__(self):
+        self.mug = 0
+        self.mug_fill_time = 1
+
+    def delete_mug(self):
+        self.mug = 0
+
+    def add_mug(self):
+        self.mug = 1
+
+    def fill_mug(self):
+        if self.mug == 1:
+            self.mug = 2
+            invoke(self.full_mug, self.mug_fill_time)
+
+    def full_mug(self):
+        self.mug = 3
+
+
+# actual mug object
+class Mug(Entity):
+    def __init__(self, parent, inventory):
+        super().__init__()
+        self.mug = Entity(model="3D Models/mug/mug.obj", texture="3d Models/mug/mugtexture.png",
+                          z=1.5, x=.9, y=.7, rotation=(0, 150, 0), scale=4, parent=parent)
+        self.inventory = inventory
+
+    def update(self):
+        # no mug held
+        if self.inventory.mug == 0:
+            self.mug.enabled = False
+
+        # empty mug held
+        elif self.inventory.mug == 1:
+            self.mug.enabled = True
+
+        # mug filling
+        elif self.inventory.mug == 2:
+            # mug animation
+            pass
+
+        # full mug held
+        elif self.inventory.mug == 3:
+            # mug full model
+            pass

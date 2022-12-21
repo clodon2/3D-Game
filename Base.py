@@ -1,5 +1,5 @@
 from ursina import Ursina, window, Entity, color, input_handler, EditorCamera, mouse, application, scene, Vec3
-from Player import FirstPersonController
+from Player import FirstPersonController, Inventory, Mug
 
 window.vsync = True
 app = Ursina()
@@ -7,6 +7,9 @@ app = Ursina()
 Entity.default_shader = None
 
 from World import base_floor, base_walls, FLOOR_TEXTURE, WALL_TEXTURE
+from World_Interactables import Tap
+
+tester = Tap()
 
 base_floor.texture = FLOOR_TEXTURE
 for w in base_walls:
@@ -14,9 +17,11 @@ for w in base_walls:
 
 table = Entity(model='cube', collider='cube', position=Vec3(30, 1, 30), scale=(5, 2, 1), texture='floor1.png')
 
-mug = Entity(model="3D Models/mug.obj", texture="3d Models/mugtexture.png", position=Vec3(30, 2, 30), scale=4)
+p_inventory = Inventory()
 
-player = FirstPersonController(model='cube', y=5, x=5, origin_y=-.5, speed=10)
+player = FirstPersonController(inventory=p_inventory, model='cube', y=5, x=5, origin_y=-.5, speed=10)
+
+p_mug = Mug(player, p_inventory)
 
 editor_camera = EditorCamera(enabled=False, ignore_paused=True)
 
@@ -24,6 +29,10 @@ editor_camera = EditorCamera(enabled=False, ignore_paused=True)
 def input(key):
     if key == 'escape':
         quit()
+    if key == 'p':
+        p_inventory.add_mug()
+    if key == 'o':
+        p_inventory.delete_mug()
 
 
 def pause_input(key):
