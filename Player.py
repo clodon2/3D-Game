@@ -1,5 +1,5 @@
 from ursina import Entity, camera, color,\
-    mouse, Vec2, Vec3, raycast, held_keys, time, curve, invoke
+    mouse, Vec2, Vec3, raycast, held_keys, time, curve, invoke, FrameAnimation3d, Animator
 
 
 # modified first person controller from prefabs
@@ -142,46 +142,69 @@ class FirstPersonController(Entity):
 class Inventory:
     def __init__(self):
         self.mug = 0
-        self.mug_fill_time = 1
+        self.mug_fill_time = 3
 
     def delete_mug(self):
         self.mug = 0
 
-    def add_mug(self):
+    def empty_mug(self):
         self.mug = 1
 
     def fill_mug(self):
         if self.mug == 1:
             self.mug = 2
-            invoke(self.full_mug, self.mug_fill_time)
+            invoke(self.full_mug, delay=self.mug_fill_time)
 
     def full_mug(self):
-        self.mug = 3
+        if self.mug == 2:
+            self.mug = 3
 
 
-# actual mug object
-class Mug(Entity):
+# updates mug model based on inventory value
+class MugCon(Animator):
     def __init__(self, parent, inventory):
-        super().__init__()
-        self.mug = Entity(model="3D Models/mug/mug.obj", texture="3d Models/mug/mugtexture.png",
+        # used when no mug is held
+        self.no_mug = Entity(model="3D Models/mug/mug.obj", texture="3d Models/mug/mugtexture.png",
+                          z=1.5, x=.9, y=.7, rotation=(0, 150, 0), scale=4, parent=parent, enabled=False, visible=False)
+        # used when empty mug is held
+        self.empty_mug = Entity(model="3D Models/mug/mug.obj", texture="3d Models/mug/mugtexture.png",
                           z=1.5, x=.9, y=.7, rotation=(0, 150, 0), scale=4, parent=parent)
+        # used when mug is being filled
+        self.filling_mug = FrameAnimation3d("3D Models/mug/mug_filling/mug_", z=1.5, x=.9, y=.7, rotation=(0, 150, 0),
+                                                  parent=parent, color=color.gray, texture="3D Models/mug/mugtexture.png",
+                                                  fps=2, autoplay=False, loop=False, enabled=False)
+        # used when mug is full
+        self.full_mug = Entity(model="3D Models/mug/full_mug.obj", texture="3d Models/mug/mugtexture.png",
+                          z=1.5, x=.9, y=.7, rotation=(0, 150, 0), scale=1, parent=parent)
+
         self.inventory = inventory
 
+        super().__init__(animations={
+            "none": self.no_mug,
+            "empty": self.empty_mug,
+            "filling": self.filling_mug,
+            "full": self.full_mug
+        })
+        self.start_state = "none"
+
     def update(self):
-        # no mug held
         if self.inventory.mug == 0:
-            self.mug.enabled = False
+            self.clear()
+        if self.inventory.mug == 1:
+            self.empty()
+        if self.inventory.mug == 2:
+            self.fill()
+        if self.inventory.mug == 3:
+            self.full()
 
-        # empty mug held
-        elif self.inventory.mug == 1:
-            self.mug.enabled = True
+    def empty(self):
+        self.state = "empty"
 
-        # mug filling
-        elif self.inventory.mug == 2:
-            # mug animation
-            pass
+    def clear(self):
+        self.state = "none"
 
-        # full mug held
-        elif self.inventory.mug == 3:
-            # mug full model
-            pass
+    def fill(self):
+        self.state = "filling"
+
+    def full(self):
+        self.state = "full"
