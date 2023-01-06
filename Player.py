@@ -10,7 +10,7 @@ class FirstPersonController(Entity):
         self.inventory = inventory
 
         self.speed = 5
-        self.height = 2
+        self.height = 2.5
         self.camera_pivot = Entity(parent=self, y=self.height)
 
         camera.parent = self.camera_pivot
@@ -165,17 +165,18 @@ class MugCon(Animator):
     def __init__(self, parent, inventory):
         # used when no mug is held
         self.no_mug = Entity(model="3D Models/mug/mug.obj", texture="3d Models/mug/mugtexture.png",
-                          z=1.5, x=.9, y=.7, rotation=(0, 150, 0), scale=4, parent=parent, enabled=False, visible=False)
+                             z=1.5, x=.9, y=1.2, rotation=(0, 150, 0), scale=4, parent=parent, enabled=False,
+                             visible=False)
         # used when empty mug is held
         self.empty_mug = Entity(model="3D Models/mug/mug.obj", texture="3d Models/mug/mugtexture.png",
-                          z=1.5, x=.9, y=.7, rotation=(0, 150, 0), scale=4, parent=parent)
+                                z=1.5, x=.9, y=1.2, rotation=(0, 150, 0), scale=4, parent=parent)
         # used when mug is being filled
-        self.filling_mug = FrameAnimation3d("3D Models/mug/mug_filling/mug_", z=1.5, x=.9, y=.7, rotation=(0, 150, 0),
-                                                  parent=parent, color=color.gray, texture="3D Models/mug/mugtexture.png",
-                                                  fps=2, autoplay=False, loop=False, enabled=False)
+        self.filling_mug = FrameAnimation3d("3D Models/mug/mug_filling/mug_", z=1.5, x=.9, y=1.2, rotation=(0, 150, 0),
+                                            parent=parent, color=color.gray, texture="3D Models/mug/mugtexture.png",
+                                            fps=2, autoplay=False, loop=False, enabled=False)
         # used when mug is full
         self.full_mug = Entity(model="3D Models/mug/full_mug.obj", texture="3d Models/mug/mugtexture.png",
-                          z=1.5, x=.9, y=.7, rotation=(0, 150, 0), scale=1, parent=parent)
+                               z=1.5, x=.9, y=1.2, rotation=(0, 150, 0), scale=1, parent=parent)
 
         self.inventory = inventory
 

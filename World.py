@@ -1,5 +1,5 @@
 from ursina import Entity, color, Vec3
-from World_Interactables import Tap
+from World_Objects import Tap, Table
 
 # floor characteristics (base for room)
 FLOOR_CHUNKS = 10
@@ -70,3 +70,9 @@ for tap in tap_holder.children:
 
 tap2.x = 20
 tap3.x = 40
+
+# tables
+
+table1 = Table(size=5, position=(0, 0, 10))
+table2 = Table(size=5, position=(20, 0, 10))
+table3 = Table(size=5, position=(40, 0, 10))
