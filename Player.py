@@ -1,3 +1,5 @@
+# stores all classes/functions pertaining to the player and inventory (includes display mug)
+
 from ursina import Entity, camera, color,\
     mouse, Vec2, Vec3, raycast, held_keys, time, curve, invoke, FrameAnimation3d, Animator
 
@@ -138,11 +140,11 @@ class FirstPersonController(Entity):
         self.cursor.enabled = False
 
 
-# inventory (updates what mug is held)
+# inventory (determines display mug state)
 class Inventory:
     def __init__(self):
         self.mug = 0
-        self.mug_fill_time = 3
+        self.mug_fill_time = 1
 
     def delete_mug(self):
         self.mug = 0
@@ -173,7 +175,7 @@ class MugCon(Animator):
         # used when mug is being filled
         self.filling_mug = FrameAnimation3d("3D Models/mug/mug_filling/mug_", z=1.5, x=.9, y=1.2, rotation=(0, 150, 0),
                                             parent=parent, color=color.gray, texture="3D Models/mug/mugtexture.png",
-                                            fps=2, autoplay=False, loop=False, enabled=False)
+                                            fps=5, autoplay=False, loop=False, enabled=False)
         # used when mug is full
         self.full_mug = Entity(model="3D Models/mug/full_mug.obj", texture="3d Models/mug/mugtexture.png",
                                z=1.5, x=.9, y=1.2, rotation=(0, 150, 0), scale=1, parent=parent)

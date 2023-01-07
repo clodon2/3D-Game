@@ -1,3 +1,5 @@
+# sets up world environment, all map entities should be spawned in here
+
 from ursina import Entity, color, Vec3
 from World_Objects import Tap, Table
 
@@ -53,7 +55,7 @@ ceiling_light_z = FLOOR_POSITION[2] + (CHUNK_SIZE_Z*(FLOOR_LENGTH/2))
 ceiling_light_y = FLOOR_POSITION[1] + WALL_HEIGHT*CHUNK_SIZE_Z
 ceiling_light_position = Vec3(ceiling_light_x, ceiling_light_y, ceiling_light_z)
 
-# taps
+# taps, tap holder can be used to refernce all taps
 tap_holder = Entity()
 tap1 = Tap()
 tap2 = Tap()
@@ -63,6 +65,7 @@ tap1.parent = tap_holder
 tap2.parent = tap_holder
 tap3.parent = tap_holder
 
+# positions taps for map
 for tap in tap_holder.children:
     tap.rotation_y = 180
     tap.y = 1
@@ -71,8 +74,8 @@ for tap in tap_holder.children:
 tap2.x = 20
 tap3.x = 40
 
-# tables
+# tables customers move along and mugs spawn on
 
-table1 = Table(size=5, position=(0, 0, 10))
-table2 = Table(size=5, position=(20, 0, 10))
-table3 = Table(size=5, position=(40, 0, 10))
+table1 = Table(size=7, position=(0, 0, 10))
+table2 = Table(size=7, position=(20, 0, 10))
+table3 = Table(size=7, position=(40, 0, 10))

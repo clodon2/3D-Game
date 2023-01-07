@@ -1,11 +1,15 @@
-from ursina import Entity, invoke, Text, destroy, boxcast
+# used to store entity classes used in the world
 
+from ursina import Entity, invoke, Text, destroy
+
+# text used in entity tooltips
 Text.default_resolution = 1080 * Text.size
 
 
 # tap to get root beer from
 class Tap(Entity):
     def __init__(self):
+        # sets up basic attributes
         super().__init__(
             model="3D Models/tap/tap.obj",
             texture="3D Models/tap/texture.png",
@@ -28,10 +32,12 @@ class Table(Entity):
         super().__init__(parent=parent)
 
         for i in range(size):
+            # spawns the end of the table
             if i == 0:
                 Entity(model="3D Models/tableend/tableend.obj", texture="3D Models/tableend/texture.png",
                        collider='mesh', parent=self, y=(.6 + position[1]), z=position[2], x=position[0],
                        scale=(.7, .9, 1))
+            # spawns in all subsequent pieces of the table
             else:
                 Entity(model="3D Models/tablemid/tablemid.obj", texture="3D Models/tablemid/texture.png",
                        collider='mesh', parent=self, y=(.6 + position[1]), z=((4.1*i) + position[2]), x=position[0],
@@ -41,25 +47,31 @@ class Table(Entity):
 class Customer(Entity):
     def __init__(self, position=(0, 0, 0)):
         super().__init__(position=position, model='cube', scale=(1, 4, 1))
+        # hand is used to detect a mug
         self.hand = Entity(model='cube', parent=self, scale=(2.2, .5, 1), collider='box')
         self.hand.x -= 3
         self.hand.y += .3
 
     def update(self):
+        # moves toward end of table
         self.z -= .05
 
 
+# sent mug entities
 class TableMug(Entity):
     def __init__(self, position):
         super().__init__(model="3D Models/mug/mug.obj", texture="3d Models/mug/mugtexture.png", scale=4,
                          position=position, rotation=(0, 180, 0), collider='box')
 
     def update(self):
+        # moves toward customer spawn at tables
         self.z += .3
 
 
+# handes mug-customer collisions andd deletions
 class MugCustomerHandler:
     def __init__(self, mugs, customers):
+        # lists of sent mugs and customers
         self.mugs = mugs
         self.customers = customers
 
@@ -78,14 +90,13 @@ class MugCustomerHandler:
                 self.mugs.remove(mug)
 
         for mug in self.mugs:
-            # get mug collision in front of self
-            mug_collider = boxcast(mug.world_position, mug.back, distance=.5, thickness=(2, 2))
+            # gets entities intersecting the mugs
+            mug_collider = mug.intersects()
             ent_collide = mug_collider.entity
 
             # kills mug and customer if they collide
             for customer in self.customers:
                 if ent_collide == customer.hand:
-                    print("KILL")
                     self.customers.remove(ent_collide.parent)
                     self.mugs.remove(mug)
                     destroy(mug)
