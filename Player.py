@@ -166,18 +166,18 @@ class Inventory:
 class MugCon(Animator):
     def __init__(self, parent, inventory):
         # used when no mug is held
-        self.no_mug = Entity(model="3D Models/mug/mug.obj", texture="3d Models/mug/mugtexture.png",
+        self.no_mug = Entity(model="3D Models/othermug/mug.obj", texture="3d Models/othermug/mugtexture.png",
                              z=1.5, x=.9, y=1.2, rotation=(0, 150, 0), scale=4, parent=parent, enabled=False,
                              visible=False)
         # used when empty mug is held
-        self.empty_mug = Entity(model="3D Models/mug/mug.obj", texture="3d Models/mug/mugtexture.png",
+        self.empty_mug = Entity(model="3D Models/othermug/mug.obj", texture="3d Models/othermug/mugtexture.png",
                                 z=1.5, x=.9, y=1.2, rotation=(0, 150, 0), scale=4, parent=parent)
         # used when mug is being filled
-        self.filling_mug = FrameAnimation3d("3D Models/mug/mug_filling/mug_", z=1.5, x=.9, y=1.2, rotation=(0, 150, 0),
-                                            parent=parent, color=color.gray, texture="3D Models/mug/mugtexture.png",
-                                            fps=5, autoplay=False, loop=False, enabled=False)
+        self.filling_mug = FrameAnimation3d("3D Models/mug/mug_fill_anim/mug_", z=1.5, x=.9, y=1.2, rotation=(0, 150, 0),
+                                            parent=parent, texture="3D Models/mug/mug_fill_anim/texture_02.png",
+                                            fps=17, autoplay=True, loop=False, enabled=False)
         # used when mug is full
-        self.full_mug = Entity(model="3D Models/mug/full_mug.obj", texture="3d Models/mug/mugtexture.png",
+        self.full_mug = Entity(model="3D Models/mug/mug_fill_anim/mug_10.obj", texture="3d Models/mug/mug_fill_anim/texture_02.png",
                                z=1.5, x=.9, y=1.2, rotation=(0, 150, 0), scale=1, parent=parent)
 
         self.inventory = inventory

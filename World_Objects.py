@@ -31,6 +31,8 @@ class Table(Entity):
     def __init__(self, size=3, position=(0, 0, 0), parent=None):
         super().__init__(parent=parent)
 
+        self.tooltip = Text(text='Right Click To Send Drink', wordwrap=30, enabled=False)
+
         for i in range(size):
             # spawns the end of the table
             if i == 0:
@@ -60,7 +62,7 @@ class Customer(Entity):
 # sent mug entities
 class TableMug(Entity):
     def __init__(self, position):
-        super().__init__(model="3D Models/mug/mug.obj", texture="3d Models/mug/mugtexture.png", scale=4,
+        super().__init__(model="3D Models/mug/mug_fill_anim/mug_10.obj", texture="3d Models/mug/mug_fill_anim/texture_02.png", scale=1,
                          position=position, rotation=(0, 180, 0), collider='box')
 
     def update(self):
