@@ -99,17 +99,18 @@ def input(key):
         dash_sound.play()
 
     # DEV INPUTS
-    # spawn in empty inv mug
-    if key == 'p':
-        print("working")
-        p_inventory.empty_mug()
-    # delete cur mug in hand (may be needed in final release)
-    if key == 'o':
-        p_inventory.delete_mug()
-    # spawns in a customer at first table (depricated)
-    if key == 'b':
-        g = Customer(position=(3, 2, 25))
-        cur_customers.append(g)
+    if key == "p":
+        for c in cur_customers:
+            c.turn_around()
+    if key == "o":
+        for c in cur_customers:
+            c.drink()
+    if key == "i":
+        for c in cur_customers:
+            c.idle()
+    if key == "u":
+        for c in cur_customers:
+            c.walk_forward()
     # sound tests
     if key == "l":
         mug_fill_sound.play()
