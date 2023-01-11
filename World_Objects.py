@@ -66,8 +66,9 @@ class Customer(Entity):
 
         self.direction = 1
 
-        # display model bools
+        # display model stuff
         self.drinking = False
+        self.drink_time = 1
 
     def update(self):
         # moves toward end of table
@@ -104,6 +105,7 @@ class Customer(Entity):
     def drink(self):
         self.direction = 0
         self.drinking = True
+        invoke(self.walk_backward, delay=self.drink_time)
 
 
 class CustomerAnimator(Animator):
