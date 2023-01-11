@@ -1,16 +1,19 @@
 # stores all classes/functions pertaining to the player and inventory (includes display mug)
 
 from ursina import Entity, camera, color,\
-    mouse, Vec2, Vec3, raycast, held_keys, time, curve, invoke, FrameAnimation3d, Animator
+    mouse, Vec2, Vec3, raycast, held_keys, time, curve, invoke, FrameAnimation3d, Animator, Text
 
 
 # modified first person controller from prefabs
 class FirstPersonController(Entity):
     def __init__(self, inventory, **kwargs):
         self.cursor = Entity(parent=camera.ui, model='quad', color=color.pink, scale=.008, rotation_z=45)
+        self.old_score = 0
+        self.score = 0
+        self.scoretext = Text(text=self.score, font='Kenney Pixel.ttf', color=color.rgb(51,255,255), scale=(2, 2), x = -0.8, y = 0.4, resolution=1080*Text.size)
         super().__init__()
+        self.collider = 'box'
         self.inventory = inventory
-
         self.speed = 5
         self.height = 2.5
         self.camera_pivot = Entity(parent=self, y=self.height)
@@ -41,8 +44,13 @@ class FirstPersonController(Entity):
             if ray.hit:
                 self.y = ray.world_point.y
 
-
     def update(self):
+        # display new score value
+        if self.old_score != self.score:
+            self.scoretext.text = self.score
+            self.scoretext.appear(speed=0, delay=0)
+        self.old_score = self.score
+
         self.rotation_y += mouse.velocity[0] * self.mouse_sensitivity[1]
 
         self.camera_pivot.rotation_x -= mouse.velocity[1] * self.mouse_sensitivity[0]
@@ -56,8 +64,8 @@ class FirstPersonController(Entity):
         # adds dash velocity
         self.direction += Vec3(self.forward * self.x_dash)
 
-        feet_ray = raycast(self.position+Vec3(0,0.5,0), self.direction, ignore=(self,), distance=.5, debug=False)
-        head_ray = raycast(self.position+Vec3(0,self.height-.1,0), self.direction, ignore=(self,), distance=.5, debug=False)
+        feet_ray = raycast(self.position+Vec3(0,0.5,0), self.direction, ignore=(self,), distance=1, debug=False)
+        head_ray = raycast(self.position+Vec3(0,self.height-.1,0), self.direction, ignore=(self,), distance=1, debug=False)
         if not feet_ray.hit and not head_ray.hit:
             move_amount = self.direction * time.dt * self.speed
 
@@ -72,9 +80,8 @@ class FirstPersonController(Entity):
             self.position += move_amount
         else:
             self.end_dash()
-
+            self.end_dash_movement()
             # self.position += self.direction * self.speed * time.dt
-
 
         if self.gravity:
             # gravity

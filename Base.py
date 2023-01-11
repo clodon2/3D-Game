@@ -4,7 +4,7 @@
 
 
 from ursina import Ursina, window, Entity, EditorCamera, mouse, application, Vec3, held_keys, raycast, camera, destroy, \
-    invoke
+    invoke, Audio
 from Player import FirstPersonController, Inventory, MugCon
 from random import choice
 
@@ -42,7 +42,14 @@ cur_mugs = []
 cur_customers = []
 
 # handles mug-customer collisions and deletion
-mug_cust_collisions = MugCustomerHandler(cur_mugs, cur_customers)
+mug_cust_collisions = MugCustomerHandler(cur_mugs, cur_customers, player)
+
+# SOUNDS (wont work when in another file)
+
+drink_sound = Audio("Sounds/drink.mp3", autoplay=False)
+mug_fill_sound = Audio("Sounds/pouring_1.mp3", autoplay=False, volume=2)
+bg_music = Audio("Sounds/bg-song.mp3", autoplay=True, loops=10000000)
+dash_sound = Audio("Sounds/dash.mp3", autoplay=False, volume=2)
 
 
 # begins a recurring event (spawning customers in)
@@ -87,6 +94,10 @@ def input(key):
         except:
             pass
 
+    # plays dash sound if player dashes
+    if key == "space" and not player.dashing:
+        dash_sound.play()
+
     # DEV INPUTS
     # spawn in empty inv mug
     if key == 'p':
@@ -99,6 +110,9 @@ def input(key):
     if key == 'b':
         g = Customer(position=(3, 2, 25))
         cur_customers.append(g)
+    # sound tests
+    if key == "l":
+        mug_fill_sound.play()
 
 
 # updates for each frame (i think)
@@ -114,9 +128,17 @@ def update():
     if mouse.left and tap_ray.hit:
         if p_inventory.mug == 0:
             p_inventory.empty_mug()
+        if not mug_fill_sound.status == 2:
+            mug_fill_sound.play()
         p_inventory.fill_mug()
     elif (not mouse.left or not tap_ray.hit) and p_inventory.mug == 2:
+        print("L")
+        p_mug.filling_mug.current_frame = 0
+        if mug_fill_sound.status == 2:
+            mug_fill_sound.stop(destroy=True)
         p_inventory.delete_mug()
+    if p_inventory.mug == 3 and mug_fill_sound.status == 2:
+        mug_fill_sound.stop()
 
 
 # inputs used when game is paused

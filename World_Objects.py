@@ -37,13 +37,22 @@ class Table(Entity):
             # spawns the end of the table
             if i == 0:
                 Entity(model="3D Models/tableend/tableend.obj", texture="3D Models/tableend/texture.png",
-                       collider='mesh', parent=self, y=(.6 + position[1]), z=position[2], x=position[0],
+                       collider='box', parent=self, y=(.6 + position[1]), z=position[2], x=position[0],
                        scale=(.7, .9, 1))
             # spawns in all subsequent pieces of the table
             else:
                 Entity(model="3D Models/tablemid/tablemid.obj", texture="3D Models/tablemid/texture.png",
-                       collider='mesh', parent=self, y=(.6 + position[1]), z=((4.1*i) + position[2]), x=position[0],
+                       collider='box', parent=self, y=(.6 + position[1]), z=((4.1*i) + position[2]), x=position[0],
                        scale=(.7, .9, 1))
+
+    def update(self):
+        hover_list = []
+        for e in self.children:
+            hover_list.append(e.hovered)
+        if True in hover_list and not self.tooltip.enabled:
+            self.tooltip.enabled = True
+        elif True not in hover_list and self.tooltip.enabled:
+            self.tooltip.enabled = False
 
 
 class Customer(Entity):
@@ -72,10 +81,11 @@ class TableMug(Entity):
 
 # handes mug-customer collisions andd deletions
 class MugCustomerHandler:
-    def __init__(self, mugs, customers):
+    def __init__(self, mugs, customers, player):
         # lists of sent mugs and customers
         self.mugs = mugs
         self.customers = customers
+        self.player = player
 
     def update(self):
         # prevents customers from moving past the table
@@ -87,7 +97,7 @@ class MugCustomerHandler:
 
         # prevents mugs from moving past the table
         for mug in self.mugs:
-            if mug.z >= 30:
+            if mug.z >= 40:
                 destroy(mug)
                 self.mugs.remove(mug)
 
@@ -99,6 +109,7 @@ class MugCustomerHandler:
             # kills mug and customer if they collide
             for customer in self.customers:
                 if ent_collide == customer.hand:
+                    self.player.score += 100
                     self.customers.remove(ent_collide.parent)
                     self.mugs.remove(mug)
                     destroy(mug)
