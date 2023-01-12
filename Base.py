@@ -15,13 +15,17 @@ Entity.default_shader = None
 
 # world stuff
 from World_Objects import Customer, TableMug, MugCustomerHandler
-from World import base_floor, FLOOR_TEXTURE, tap_holder, table1, table2, table3
+from World import base_floor, FLOOR_TEXTURE, tap_holder, table1, table2, table3, WALL_TEXTURE, base_walls
 
 # bar tables which customers move along and mugs spawn on
 tables = [table1, table2, table3]
 
 # setting floor texture
 base_floor.texture = FLOOR_TEXTURE
+
+# set wall texture
+for b in base_walls:
+    b.texture = WALL_TEXTURE
 
 # player stuff
 p_inventory = Inventory()
@@ -133,7 +137,6 @@ def update():
             mug_fill_sound.play()
         p_inventory.fill_mug()
     elif (not mouse.left or not tap_ray.hit) and p_inventory.mug == 2:
-        print("L")
         p_mug.filling_mug.current_frame = 0
         if mug_fill_sound.status == 2:
             mug_fill_sound.stop(destroy=True)

@@ -68,6 +68,7 @@ class Customer(Entity):
 
         # display model stuff
         self.drinking = False
+        self.angry = False
         self.drink_time = 1
 
     def update(self):
@@ -75,7 +76,9 @@ class Customer(Entity):
         self.z -= .05 * self.direction
 
         # display model updates
-        if self.direction == 0 and not self.drinking:
+        if self.angry:
+            self.display_model.state = "mad"
+        elif self.direction == 0 and not self.drinking:
             self.display_model.state = "idle"
         elif self.direction == 0 and self.drinking:
             self.display_model.state = "drink"
@@ -107,6 +110,11 @@ class Customer(Entity):
         self.drinking = True
         invoke(self.walk_backward, delay=self.drink_time)
 
+    def mad(self):
+        self.direction = 0
+        self.angry = True
+        destroy(self, 1)
+
 
 class CustomerAnimator(Animator):
     def __init__(self, parent):
@@ -115,12 +123,14 @@ class CustomerAnimator(Animator):
         self.walk_forward = Entity(model='cube', scale=(1, 1, 1), color=color.red, parent=parent)
         self.walk_backward = Entity(model='cube', scale=(1, 1, 1), color=color.green, parent=parent)
         self.drink = Entity(model='cube', scale=(1, 1, 1), color=color.yellow, parent=parent)
+        self.mad = Entity(model='cube', scale=(1, 1, 1), color=color.black, parent=parent)
 
         super().__init__(animations={
             "idle": self.idle,
             "walk forward": self.walk_forward,
             "walk backward": self.walk_backward,
-            "drink": self.drink
+            "drink": self.drink,
+            "mad": self.mad
         })
 
         self.state = "walk forward"
@@ -137,7 +147,7 @@ class TableMug(Entity):
         self.z += .3
 
 
-# handes mug-customer collisions and deletions
+# handles mug-customer collisions and deletions
 class MugCustomerHandler:
     def __init__(self, mugs, customers, player):
         # lists of sent mugs and customers
@@ -149,8 +159,11 @@ class MugCustomerHandler:
         # prevents customers from moving past the table
         for customer in self.customers:
             if customer.z <= 10:
+                customer.mad()
                 self.customers.remove(customer)
-                destroy(customer)
+                self.player.lives -= 1
+
+        for customer in self.customers:
             if customer.z >= 40:
                 self.customers.remove(customer)
                 destroy(customer)
@@ -170,8 +183,7 @@ class MugCustomerHandler:
             for customer in self.customers:
                 if ent_collide == customer.hand and ent_collide.parent.direction == 1:
                     self.player.score += 100
-                    self.customers.remove(ent_collide.parent)
                     self.mugs.remove(mug)
                     destroy(mug)
-                    destroy(ent_collide.parent)
+                    ent_collide.parent.drink()
 

@@ -1,16 +1,31 @@
 # stores all classes/functions pertaining to the player and inventory (includes display mug)
 
 from ursina import Entity, camera, color,\
-    mouse, Vec2, Vec3, raycast, held_keys, time, curve, invoke, FrameAnimation3d, Animator, Text
+    mouse, Vec2, Vec3, raycast, held_keys, time, curve, invoke, FrameAnimation3d, Animator, Text, Sprite, clamp
 
 
 # modified first person controller from prefabs
 class FirstPersonController(Entity):
     def __init__(self, inventory, **kwargs):
         self.cursor = Entity(parent=camera.ui, model='quad', color=color.pink, scale=.008, rotation_z=45)
+
+        Text.size = .04
+        Text.default_resolution = 1080 * Text.size
+
+        # score
         self.old_score = 0
         self.score = 0
-        self.scoretext = Text(text=self.score, font='Kenney Pixel.ttf', color=color.rgb(51,255,255), scale=(2, 2), x = -0.8, y = 0.4, resolution=1080*Text.size)
+        self.scoretext = Text(text=self.score, font='other/OldePixel.ttf', color=color.rgb(210,180,140),
+                              x=-0.75, y=0.3)
+        self.rootbeericon = Sprite("Sprites n GUI/root beer.png", parent=camera.ui, scale=.047, x=-.8, y=.28)
+
+        # lives
+        self.old_lives = 3
+        self.lives = 3
+        self.livestext = Text(text=self.lives, font='other/OldePixel.ttf', color=color.rgb(255,51,51),
+                              x=-0.75, y=0.42)
+        self.hearticon = Sprite("Sprites n GUI/full.png", parent=camera.ui, x=-.8, y=.4, scale=.7)
+
         super().__init__()
         self.collider = 'box'
         self.inventory = inventory
@@ -50,6 +65,12 @@ class FirstPersonController(Entity):
             self.scoretext.text = self.score
             self.scoretext.appear(speed=0, delay=0)
         self.old_score = self.score
+
+        # display new life count
+        if self.old_lives != self.lives:
+            self.livestext.text = self.lives
+            self.scoretext.appear(speed=0, delay=0)
+        self.old_lives = self.lives
 
         self.rotation_y += mouse.velocity[0] * self.mouse_sensitivity[1]
 
