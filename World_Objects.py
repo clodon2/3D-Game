@@ -55,12 +55,18 @@ class Table(Entity):
             self.tooltip.enabled = False
 
 
+class Doorway(Entity):
+    def __init__(self, position):
+        super().__init__(model="3D Models/door/Dooropen.obj", texture="3D Models/door/texture.png", position=position,
+                         rotation=(0, 180, 0))
+
+
 class Customer(Entity):
     def __init__(self, position=(0, 0, 0)):
         super().__init__(position=position, model='cube', scale=(1, 4, 1), visible_self=False)
         self.display_model = CustomerAnimator(self)
         # hand is used to detect a mug
-        self.hand = Entity(model='cube', parent=self, scale=(2.2, .5, 1), collider='box')
+        self.hand = Entity(model='cube', parent=self, scale=(2.2, .5, 1), collider='box', visible_self=False)
         self.hand.x -= 3
         self.hand.y += .3
 

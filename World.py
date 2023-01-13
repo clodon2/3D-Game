@@ -1,7 +1,7 @@
 # sets up world environment, all map entities should be spawned in here
 
 from ursina import Entity, color, Vec3
-from World_Objects import Tap, Table
+from World_Objects import Tap, Table, Doorway
 
 # floor characteristics (base for room)
 FLOOR_CHUNKS = 10
@@ -18,12 +18,13 @@ FLOOR_TEXTURE = "Textures/floored.png"
 # updates to fit floor
 WALL_HEIGHT = 3
 X_WALL_LENGTH = FLOOR_LENGTH
-Z_WALL_LENGTH = FLOOR_WIDTH
+Z_WALL_LENGTH = FLOOR_WIDTH*2
 WALL_THICKNESS = 1
 
 WALL_TEXTURE = "Textures/wall2.png"
 
 base_floor = Entity(model=None, collider=None)
+base_ceiling = Entity(model=None, collider=None)
 
 base_wall_x1 = Entity(model=None, collider=None)
 base_wall_x2 = Entity(model=None, collider=None)
@@ -41,17 +42,23 @@ for w in range(FLOOR_WIDTH):
         new_floor_chunk.y = FLOOR_Y
         new_floor_chunk.parent = base_floor
 
+        new_ceil_chunk = Entity(model='cube', color=color.blue, scale=(CHUNK_SIZE_X, 1, CHUNK_SIZE_Z))
+        new_ceil_chunk.x = w * CHUNK_SIZE_X + FLOOR_POSITION[0]
+        new_ceil_chunk.z = l * CHUNK_SIZE_Z + FLOOR_POSITION[2]
+        new_ceil_chunk.y = FLOOR_Y + (CHUNK_SIZE_Z * WALL_HEIGHT)
+        new_ceil_chunk.parent = base_ceiling
+
 # Z Walls
 for h in range(WALL_HEIGHT):
     for w in range(Z_WALL_LENGTH):
-        new_zwall_chunk = Entity(model='cube', scale=(CHUNK_SIZE_X, CHUNK_SIZE_Z, 1))
-        new_zwall_chunk.x = w * CHUNK_SIZE_X + FLOOR_POSITION[0]
+        new_zwall_chunk = Entity(model='cube', scale=(CHUNK_SIZE_Z, CHUNK_SIZE_Z, 1))
+        new_zwall_chunk.x = w * CHUNK_SIZE_Z + FLOOR_POSITION[0] - 5
         new_zwall_chunk.z = FLOOR_POSITION[2] - CHUNK_SIZE_Z / 2
         new_zwall_chunk.y = CHUNK_SIZE_Z * h + FLOOR_POSITION[1] + CHUNK_SIZE_Z / 2
         new_zwall_chunk.parent = base_wall_z1
 
-        new_zwall_chunk2 = Entity(model='cube', scale=(CHUNK_SIZE_X, CHUNK_SIZE_Z, 1))
-        new_zwall_chunk2.x = w * CHUNK_SIZE_X + FLOOR_POSITION[0]
+        new_zwall_chunk2 = Entity(model='cube', scale=(CHUNK_SIZE_Z, CHUNK_SIZE_Z, 1))
+        new_zwall_chunk2.x = w * CHUNK_SIZE_Z + FLOOR_POSITION[0] - 5
         new_zwall_chunk2.z = FLOOR_POSITION[2] + (FLOOR_LENGTH * CHUNK_SIZE_Z) - CHUNK_SIZE_Z / 2 - 4
         new_zwall_chunk2.y = CHUNK_SIZE_Z * h + FLOOR_POSITION[1] + CHUNK_SIZE_Z / 2
         new_zwall_chunk2.parent = base_wall_z2
@@ -107,7 +114,7 @@ tap3.parent = tap_holder
 for tap in tap_holder.children:
     tap.rotation_y = 180
     tap.y = 1
-    tap.z = 2
+    tap.z = 1.7
 
 tap2.x = 20
 tap3.x = 40
@@ -117,3 +124,8 @@ tap3.x = 40
 table1 = Table(size=7, position=(0, 0, 10))
 table2 = Table(size=7, position=(20, 0, 10))
 table3 = Table(size=7, position=(40, 0, 10))
+
+# doorway customers enter from
+Doorway(position=(1.3, 0, 35.3))
+Doorway(position=(21.3, 0, 35.3))
+Doorway(position=(41.3, 0, 35.3))
