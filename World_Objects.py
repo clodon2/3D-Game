@@ -154,7 +154,7 @@ class MugCustomerHandler:
                 self.player.lives -= 1
 
         for customer in self.customers:
-            if customer.z >= 40:
+            if customer.z > 40:
                 self.customers.remove(customer)
                 destroy(customer)
 
