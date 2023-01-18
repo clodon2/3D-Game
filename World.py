@@ -1,6 +1,7 @@
 # sets up world environment, all map entities should be spawned in here
 
 from ursina import Entity, color, Vec3
+from ursina.lights import DirectionalLight
 from World_Objects import Tap, Table, Doorway
 
 # floor characteristics (base for room)
@@ -94,12 +95,6 @@ base_wall_x1.collider = 'mesh'
 base_wall_x2.combine()
 base_wall_x2.collider = 'mesh'
 
-# light
-ceiling_light_x = FLOOR_POSITION[0] + (CHUNK_SIZE_X*(FLOOR_WIDTH/2))
-ceiling_light_z = FLOOR_POSITION[2] + (CHUNK_SIZE_Z*(FLOOR_LENGTH/2))
-ceiling_light_y = FLOOR_POSITION[1] + WALL_HEIGHT*CHUNK_SIZE_Z
-ceiling_light_position = Vec3(ceiling_light_x, ceiling_light_y, ceiling_light_z)
-
 # taps, tap holder can be used to refernce all taps
 tap_holder = Entity()
 tap1 = Tap()
@@ -129,3 +124,9 @@ table3 = Table(size=7, position=(40, 0, 10))
 Doorway(position=(1.3, 0, 35.3))
 Doorway(position=(21.3, 0, 35.3))
 Doorway(position=(41.3, 0, 35.3))
+
+moose_head = Entity(model="3D Models/Decor/head/head/moose head.obj", texture="3D Models/Decor/head/head/texture.png",
+                    scale=3, position=(47, 5, 17), rotation=(0, 90, 0))
+
+sign = Entity(model="3D Models/Decor/sign/Sign.obj", texture="3D Models/Decor/sign/texture.png", scale=5,
+              position=(21.3, 4.5, 37.5))

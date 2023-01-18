@@ -18,13 +18,6 @@ class Tap(Entity):
         )
         self.tooltip = Text(text='Hold Left Click To Fill', wordwrap=30, enabled=False)
 
-    def update(self):
-        # shows instruction text
-        if self.hovered:
-            self.tooltip.enabled = True
-        elif not self.hovered and self.tooltip.enabled:
-            self.tooltip.enabled = False
-
 
 # creates a full table
 class Table(Entity):
@@ -45,19 +38,10 @@ class Table(Entity):
                        collider='box', parent=self, y=(.6 + position[1]), z=((4.1*i) + position[2]), x=position[0],
                        scale=(.7, .9, 1))
 
-    def update(self):
-        hover_list = []
-        for e in self.children:
-            hover_list.append(e.hovered)
-        if True in hover_list and not self.tooltip.enabled:
-            self.tooltip.enabled = True
-        elif True not in hover_list and self.tooltip.enabled:
-            self.tooltip.enabled = False
-
 
 class Doorway(Entity):
     def __init__(self, position):
-        super().__init__(model="3D Models/door/Dooropen.obj", texture="3D Models/door/texture.png", position=position,
+        super().__init__(model="3D Models/door/Door.obj", texture="3D Models/door/texture.png", position=position,
                          rotation=(0, 180, 0))
 
 
@@ -193,3 +177,24 @@ class MugCustomerHandler:
                     destroy(mug)
                     ent_collide.parent.drink()
 
+
+class TooltipHandler:
+    def __init__(self, tables, taps):
+        self.tables = tables
+        self.taps = taps
+
+    def update(self):
+        for t in self.tables:
+            hover_list = []
+            for e in t.children:
+                hover_list.append(e.hovered)
+            if True in hover_list and not t.tooltip.enabled:
+                t.tooltip.enabled = True
+            elif True not in hover_list and t.tooltip.enabled:
+                t.tooltip.enabled = False
+
+        for t in self.taps.children:
+            if t.hovered:
+                t.tooltip.enabled = True
+            elif not t.hovered and t.tooltip.enabled:
+                t.tooltip.enabled = False

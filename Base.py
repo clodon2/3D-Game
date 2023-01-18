@@ -14,7 +14,7 @@ app = Ursina()
 Entity.default_shader = None
 
 # world stuff
-from World_Objects import Customer, TableMug, MugCustomerHandler
+from World_Objects import Customer, TableMug, MugCustomerHandler, TooltipHandler
 from World import base_floor, FLOOR_TEXTURE, tap_holder, table1, table2, table3, WALL_TEXTURE, base_walls
 
 # bar tables which customers move along and mugs spawn on
@@ -47,6 +47,8 @@ cur_customers = []
 
 # handles mug-customer collisions and deletion
 mug_cust_collisions = MugCustomerHandler(cur_mugs, cur_customers, player)
+# handles tooltips for tables and taps
+tooltip_checker = TooltipHandler(tables, tap_holder)
 
 # SOUNDS (wont work when in another file)
 
@@ -103,6 +105,8 @@ def input(key):
         dash_sound.play()
 
     # DEV INPUTS
+    if key == "h":
+        player.controls = "WASD"
     if key == "p":
         for c in cur_customers:
             c.turn_around()
@@ -126,10 +130,12 @@ def update():
     p_mug.update()
     # updates collisions between sent mugs and customers
     mug_cust_collisions.update()
+    # updates table and tap tooltips (not in object updates in case we want to add distance to them)
+    tooltip_checker.update()
 
     # filling display mug with tap interaction
     # left click input use
-    tap_ray = raycast(camera.world_position, camera.forward, distance=5, traverse_target=tap_holder)
+    tap_ray = raycast(camera.world_position, camera.forward, distance=6, traverse_target=tap_holder)
     if mouse.left and tap_ray.hit:
         if p_inventory.mug == 0:
             p_inventory.empty_mug()
