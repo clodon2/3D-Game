@@ -50,7 +50,8 @@ class FirstPersonController(Entity):
         self.dash_duration = .2
         self.dash_cooldown = .8
 
-        self.controls = "Arrow Keys"
+        self.controls = ["WASD", "Arrow Keys"]
+        self.control_num = 0
 
         for key, value in kwargs.items():
             setattr(self, key ,value)
@@ -79,13 +80,13 @@ class FirstPersonController(Entity):
         self.camera_pivot.rotation_x -= mouse.velocity[1] * self.mouse_sensitivity[0]
         self.camera_pivot.rotation_x = clamp(self.camera_pivot.rotation_x, -90, 90)
 
-        if self.controls == "WASD":
+        if self.controls[self.control_num] == "WASD":
             self.direction = Vec3(
                 self.forward * (held_keys['w'] - held_keys['s'])
                 + self.right * (held_keys['d'] - held_keys['a'])
                 ).normalized()
 
-        if self.controls == "Arrow Keys":
+        if self.controls[self.control_num] == "Arrow Keys":
             self.direction = Vec3(
                 self.forward * (held_keys['up arrow'] - held_keys['down arrow'])
                 + self.right * (held_keys['right arrow'] - held_keys['left arrow'])
@@ -134,11 +135,11 @@ class FirstPersonController(Entity):
             self.air_time += time.dt * .25 * self.gravity
 
     def input(self, key):
-        if self.controls == "WASD":
+        if self.controls[self.control_num] == "WASD":
             if key == 'space':
                 self.dash()
 
-        if self.controls == "Arrow Keys":
+        if self.controls[self.control_num] == "Arrow Keys":
             if key == "control":
                 self.dash()
 

@@ -16,6 +16,8 @@ FLOOR_POSITION = (0, FLOOR_Y, 0)
 
 FLOOR_TEXTURE = "Textures/floored.png"
 
+CEILING_TEXTURE = "Textures/roof.png"
+
 # updates to fit floor
 WALL_HEIGHT = 3
 X_WALL_LENGTH = FLOOR_LENGTH
@@ -82,6 +84,9 @@ for h in range(WALL_HEIGHT):
 
 base_floor.combine()
 base_floor.collider = 'mesh'
+
+base_ceiling.combine()
+base_ceiling.collider = 'mesh'
 
 base_wall_z1.combine()
 base_wall_z1.collider = 'mesh'

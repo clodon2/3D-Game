@@ -16,7 +16,8 @@ class MainGame(Entity):
         Entity.default_shader = None
 
         # world stuff
-        from World import base_floor, FLOOR_TEXTURE, tap_holder, table1, table2, table3, WALL_TEXTURE, base_walls
+        from World import base_floor, FLOOR_TEXTURE, tap_holder, table1, table2, table3, WALL_TEXTURE, base_walls, \
+            base_ceiling, CEILING_TEXTURE
 
         self.tap_holder = tap_holder
         # bar tables which customers move along and mugs spawn on
@@ -24,6 +25,8 @@ class MainGame(Entity):
 
         # setting floor texture
         base_floor.texture = FLOOR_TEXTURE
+
+        base_ceiling.texture = CEILING_TEXTURE
 
         # set wall texture
         for b in base_walls:
@@ -64,7 +67,7 @@ class MainGame(Entity):
             def __init__(self, cur_cust, event_start_delay=5, event_delay=4):
                 self.event_start_delay = event_start_delay
                 self.event_delay = event_delay
-                self.spawn_list = [(3, 2, 40), (23, 2, 40), (43, 2, 40)]
+                self.spawn_list = [(3, .4, 40), (23, .4, 40), (43, .4, 40)]
                 self.cur_customers = cur_cust
 
             def start_event(self):
@@ -77,7 +80,6 @@ class MainGame(Entity):
                 g = Customer(choice(self.spawn_list))
                 self.cur_customers.append(g)
                 invoke(self.event_cooldown, delay=0)
-
 
         # start spawner
         self.c_spawner = SpawnCustomer(self.cur_customers)
@@ -108,11 +110,13 @@ class MainGame(Entity):
         if key == "space" and not self.player.dashing:
             self.dash_sound.play()
 
+        # switches controls
+        if key == "c":
+            self.player.control_num = (self.player.control_num + 1) % len(self.player.controls)
+
         # DEV INPUTS
-        if key == "t":
+        if key == "y":
             scene.clear()
-        if key == "h":
-            self.player.controls = "WASD"
         if key == "p":
             for c in self.cur_customers:
                 c.turn_around()

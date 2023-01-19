@@ -1,5 +1,6 @@
 # used to store entity classes used in the world
 
+from random import choice
 from ursina import Entity, invoke, Text, destroy, Animator, FrameAnimation3d, color
 
 # text used in entity tooltips
@@ -47,12 +48,15 @@ class Doorway(Entity):
 
 class Customer(Entity):
     def __init__(self, position=(0, 0, 0)):
-        super().__init__(position=position, model='cube', scale=(1, 4, 1), visible_self=False)
-        self.display_model = CustomerAnimator(self)
+        super().__init__(position=position, model='cube', scale=2, visible_self=False)
+        self.choices = ["F1", "F2", "M1", "M2"]
+        self.customer = choice(self.choices)
+
+        self.display_model = CustomerAnimator(self, self.customer)
         # hand is used to detect a mug
-        self.hand = Entity(model='cube', parent=self, scale=(2.2, .5, 1), collider='box', visible_self=False)
-        self.hand.x -= 3
-        self.hand.y += .3
+        self.hand = Entity(model='cube', parent=self, scale=(1.1, 1, 1), collider='box', visible_self=False)
+        self.hand.x -= 1.5
+        self.hand.y += 1.3
 
         self.direction = 1
 
@@ -63,7 +67,7 @@ class Customer(Entity):
 
     def update(self):
         # moves toward end of table
-        self.z -= .05 * self.direction
+        self.z -= .1 * self.direction
 
         # display model updates
         if self.angry:
@@ -107,13 +111,18 @@ class Customer(Entity):
 
 
 class CustomerAnimator(Animator):
-    def __init__(self, parent):
+    def __init__(self, parent, skin):
+        cust_path = f"3D Models/customers/{skin}/"
+        walk = cust_path + "walk/cust_"
+        mad = cust_path + "mad/cust_"
+        texture = cust_path + "texture.png"
+        mad_texture = cust_path + "mad/texture.png"
 
         self.idle = Entity(model='cube', scale=(1, 1, 1), parent=parent)
-        self.walk_forward = Entity(model='cube', scale=(1, 1, 1), color=color.red, parent=parent)
-        self.walk_backward = Entity(model='cube', scale=(1, 1, 1), color=color.green, parent=parent)
+        self.walk_forward = FrameAnimation3d(walk, texture=texture, scale=(1, 1, 1), parent=parent, loop=True)
+        self.walk_backward = FrameAnimation3d(walk, texture=texture, scale=(1, 1, 1), parent=parent, loop=True, rotation=(0, 180, 0))
         self.drink = Entity(model='cube', scale=(1, 1, 1), color=color.yellow, parent=parent)
-        self.mad = Entity(model='cube', scale=(1, 1, 1), color=color.black, parent=parent)
+        self.mad = FrameAnimation3d(mad, texture=mad_texture, scale=(1, 1, 1), parent=parent, loop=True)
 
         super().__init__(animations={
             "idle": self.idle,
